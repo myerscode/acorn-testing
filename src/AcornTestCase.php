@@ -18,7 +18,7 @@ abstract class AcornTestCase extends TestCase
 {
     use InteractsWithPhpFile;
 
-    protected string $testDirectory = 'tests';
+    protected string $appDirectory = 'app';
 
     /**
      * Where is the test suite running from.
@@ -94,7 +94,7 @@ abstract class AcornTestCase extends TestCase
      */
     public function directoryWithTests(): string
     {
-        return $this->runningFrom() . $this->testDirectory . DIRECTORY_SEPARATOR;
+        return $this->runningFrom() . DIRECTORY_SEPARATOR . $this->appDirectory . DIRECTORY_SEPARATOR;
     }
 
     protected function path(string|Utility $path): string
@@ -125,7 +125,7 @@ abstract class AcornTestCase extends TestCase
      */
     protected function appBase(): string
     {
-        return $this->path($this->directoryWithTests() . 'Resources/App');
+        return $this->path($this->directoryWithTests());
     }
 
     /**
