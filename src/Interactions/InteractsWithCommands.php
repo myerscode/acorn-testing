@@ -1,6 +1,6 @@
 <?php
 
-namespace Myerscode\Acorn\Testing;
+namespace Myerscode\Acorn\Testing\Interactions;
 
 use Myerscode\Acorn\Foundation\Console\ConfigInput;
 use Myerscode\Acorn\Foundation\Console\StreamOutput;
@@ -9,6 +9,8 @@ use Myerscode\Acorn\Framework\Console\Command;
 
 trait InteractsWithCommands
 {
+    use InteractsWithApplication;
+
     /**
      * @return resource
      */
@@ -35,7 +37,7 @@ trait InteractsWithCommands
 
         $stream = fopen('php://memory', 'w', false);
 
-        $output = new StreamOutput($input, $voidOutput, $stream);
+        $streamOutput = new StreamOutput($input, $voidOutput, $stream);
 
         if (is_string($command)) {
             $command = $this->application()->find($command);
@@ -43,7 +45,7 @@ trait InteractsWithCommands
             $this->application()->add($command);
         }
 
-        $command->run($input, $output);
+        $command->run($input, $streamOutput);
 
         rewind($stream);
 

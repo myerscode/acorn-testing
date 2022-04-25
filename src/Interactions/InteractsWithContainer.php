@@ -1,0 +1,41 @@
+<?php
+
+namespace Myerscode\Acorn\Testing\Interactions;
+
+use Myerscode\Acorn\Framework\Container\Container;
+
+trait InteractsWithContainer
+{
+    protected ?Container $container = null;
+
+    /**
+     * Get current Container in test
+     */
+    public function container(): Container
+    {
+        if (!(property_exists($this, 'container') && $this->container !== null)) {
+            $this->refreshContainer();
+        }
+
+        return $this->container;
+    }
+
+    public function newContainer(): Container
+    {
+        $container = new Container();
+        $container->add('config', $this->appConfig());
+
+        return $container;
+    }
+
+    public function refreshContainer(): Container
+    {
+        if (property_exists($this, 'container') && $this->container !== null) {
+            $this->container->flush();
+        }
+
+        $this->container = $this->newContainer();
+
+        return $this->container;
+    }
+}
