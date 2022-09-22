@@ -12,6 +12,8 @@
             "email": "team@myerscode.com"
         }
     ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "require": {
         "php": "^8.1",
         "mockery/mockery": "^1.4",

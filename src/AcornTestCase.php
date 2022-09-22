@@ -7,7 +7,7 @@ use Exception;
 use Mockery;
 use Mockery\LegacyMockInterface;
 use Myerscode\Acorn\Application;
-use Myerscode\Acorn\Framework\Config\Factory as ConfigFactory;
+use Myerscode\Acorn\Framework\Config\Manager as ConfigManager;
 use Myerscode\Acorn\Testing\Interactions\InteractsWithPhpFile;
 use Myerscode\Config\Config;
 use Myerscode\Utilities\Strings\Utility;
@@ -146,15 +146,28 @@ abstract class AcornTestCase extends TestCase
         return $this->path($this->runningFrom());
     }
 
+    protected function configManager(string $basePath = null): ConfigManager
+    {
+        return (new ConfigManager($basePath ?? $this->appBase()))
+            ->shouldIgnoreCache()
+            ->doNotCacheConfig();
+    }
+
     /**
      * Get a configuration object for the testing app
      */
-    protected function appConfig(): Config
+    protected function appConfig(string $basePath = null): Config
     {
-        return ConfigFactory::make([
-            'base' => $this->appBase(),
-            'src' => $this->appSrc(),
-            'cwd' => $this->appWorkingDirectory(),
-        ]);
+        return $this->configManager($basePath)
+            ->loadConfig(
+                [
+                    __DIR__ . '/../vendor/myerscode/acorn-framework/src/Config',
+                ],
+                [
+                    'base' => $this->appBase(),
+                    'src' => $this->appSrc(),
+                    'cwd' => $this->appWorkingDirectory(),
+                ]
+            );
     }
 }

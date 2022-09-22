@@ -2,7 +2,10 @@
 
 namespace Myerscode\Acorn\Testing\Interactions;
 
+use Myerscode\Acorn\Application;
 use Myerscode\Acorn\Framework\Container\Container;
+
+use function Myerscode\Acorn\Foundation\config;
 
 trait InteractsWithContainer
 {
@@ -22,8 +25,13 @@ trait InteractsWithContainer
 
     public function newContainer(): Container
     {
+        $config = $this->appConfig();
         $container = new Container();
-        $container->add('config', $this->appConfig());
+        $container->add('config', $config);
+
+        foreach ($config->value('framework.providers', []) as $provider) {
+            $container->addServiceProvider($provider);
+        }
 
         return $container;
     }
