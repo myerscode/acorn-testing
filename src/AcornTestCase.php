@@ -29,6 +29,16 @@ abstract class AcornTestCase extends TestCase
     abstract public function runningFrom(): string;
 
     /**
+     * Where to load core configuration from
+     *
+     * @return string
+     */
+    protected function coreConfigLocation(): string
+    {
+        return $this->appSrc() . '/Config';
+    }
+
+    /**
      * Catch a given exception from closure execution
      *
      * @param string $exceptionClass
@@ -161,7 +171,7 @@ abstract class AcornTestCase extends TestCase
         return $this->configManager($basePath)
             ->loadConfig(
                 [
-                    __DIR__ . '/../vendor/myerscode/acorn-framework/src/Config',
+                    $this->coreConfigLocation(),
                 ],
                 [
                     'base' => $this->appBase(),
