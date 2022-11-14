@@ -175,6 +175,7 @@ abstract class AcornTestCase extends TestCase
                 ],
                 [
                     'base' => $this->appBase(),
+                    'root' => dirname($this->appBase()),
                     'src' => $this->appSrc(),
                     'cwd' => $this->appWorkingDirectory(),
                 ]
