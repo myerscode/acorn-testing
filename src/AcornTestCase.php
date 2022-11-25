@@ -9,6 +9,8 @@ use Mockery\LegacyMockInterface;
 use Myerscode\Acorn\Application;
 use Myerscode\Acorn\Framework\Config\Manager as ConfigManager;
 use Myerscode\Acorn\Testing\Interactions\InteractsWithPhpFile;
+use Myerscode\Acorn\Testing\Support\InputOutputUtilities;
+use Myerscode\Acorn\Testing\Support\UnitTestingUtilities;
 use Myerscode\Config\Config;
 use Myerscode\Utilities\Strings\Utility;
 use PHPUnit\Framework\TestCase;
@@ -17,6 +19,8 @@ use ReflectionClass;
 abstract class AcornTestCase extends TestCase
 {
     use InteractsWithPhpFile;
+    use InputOutputUtilities;
+    use UnitTestingUtilities;
 
     protected string $appDirectory = 'app';
 

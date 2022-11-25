@@ -2,42 +2,17 @@
 
 namespace Myerscode\Acorn\Testing\Interactions;
 
-use Myerscode\Acorn\Foundation\Console\ConfigInput;
-use Myerscode\Acorn\Foundation\Console\StreamOutput;
-use Myerscode\Acorn\Foundation\Console\VoidOutput;
 use Myerscode\Acorn\Framework\Console\Command;
 
 trait InteractsWithCommands
 {
     use InteractsWithApplication;
 
-    /**
-     * @return resource
-     */
-    protected function createStream(array $inputs)
-    {
-        $stream = fopen('php://memory', 'r+', false);
-
-        foreach ($inputs as $input) {
-            fwrite($stream, $input . PHP_EOL);
-        }
-
-        rewind($stream);
-
-        return $stream;
-    }
-
     public function call(string|Command $command, array $userInput = []): string
     {
-        $input = new ConfigInput($userInput);
+        $input = $this->createInput($userInput);
 
-        $input->setStream($this->createStream($input->getArguments()));
-
-        $voidOutput = new VoidOutput();
-
-        $stream = fopen('php://memory', 'w', false);
-
-        $streamOutput = new StreamOutput($input, $voidOutput, $stream);
+        $output = $this->createStreamOutput($input);
 
         if (is_string($command)) {
             $command = $this->application()->find($command);
@@ -45,11 +20,11 @@ trait InteractsWithCommands
             $this->application()->add($command);
         }
 
-        $command->run($input, $streamOutput);
+        $command->run($input, $output);
 
-        rewind($stream);
+        rewind($output->getStream());
 
-        $display = stream_get_contents($stream);
+        $display = stream_get_contents($output->getStream());
 
         return trim(str_replace(PHP_EOL, "\n", $display));
     }

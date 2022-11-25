@@ -2,10 +2,7 @@
 
 namespace Myerscode\Acorn\Testing\Interactions;
 
-use Myerscode\Acorn\Application;
 use Myerscode\Acorn\Framework\Container\Container;
-
-use function Myerscode\Acorn\Foundation\config;
 
 trait InteractsWithContainer
 {
