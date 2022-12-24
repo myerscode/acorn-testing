@@ -17,10 +17,12 @@
     "require": {
         "php": "^8.1",
         "mockery/mockery": "^1.4",
-        "myerscode/acorn-framework": "dev-main",
         "phpunit/phpunit": "^9.5",
         "squizlabs/php_codesniffer": "^3.6",
         "symfony/var-dumper": "^6.0"
+    },
+    "require-dev": {
+        "myerscode/acorn-framework": "dev-main"
     },
     "autoload": {
         "psr-4": {
