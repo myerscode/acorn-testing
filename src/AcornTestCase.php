@@ -25,27 +25,9 @@ abstract class AcornTestCase extends TestCase
     protected string $appDirectory = 'app';
 
     /**
-     * Where is the test suite running from.
-     * This should be set in the executing test case, so Acorn can attempt to locate files
-     *
-     * @return string
-     */
-    abstract public function runningFrom(): string;
-
-    /**
-     * Where to load core configuration from
-     *
-     * @return string
-     */
-    protected function coreConfigLocation(): string
-    {
-        return $this->appSrc() . '/Config';
-    }
-
-    /**
      * Catch a given exception from closure execution
      *
-     * @param string $exceptionClass
+     * @param  string  $exceptionClass
      *
      * @return mixed
      */
@@ -70,6 +52,14 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
+     * Path where the test files are located
+     */
+    public function directoryWithTests(): string
+    {
+        return $this->runningFrom() . DIRECTORY_SEPARATOR . $this->appDirectory . DIRECTORY_SEPARATOR;
+    }
+
+    /**
      * Shortcut for creating a mock class
      */
     public function mock(string $class, array $constructorArgs = []): LegacyMockInterface
@@ -88,6 +78,14 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
+     * Where is the test suite running from.
+     * This should be set in the executing test case, so Acorn can attempt to locate files
+     *
+     * @return string
+     */
+    abstract public function runningFrom(): string;
+
+    /**
      * Shortcut for creating a spy class
      */
     public function spy($class, $constructorArgs = []): LegacyMockInterface
@@ -104,42 +102,30 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
-     * Path where the test files are located
-     */
-    public function directoryWithTests(): string
-    {
-        return $this->runningFrom() . DIRECTORY_SEPARATOR . $this->appDirectory . DIRECTORY_SEPARATOR;
-    }
-
-    protected function path(string|Utility $path): string
-    {
-        return Utility::make($path)->replace(['\\', '/'], DIRECTORY_SEPARATOR)->value();
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->setUpTraits();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        Mockery::close();
-    }
-
-    protected function setUpTraits(): void
-    {
-        $traits = $this->getClassTraits(static::class);
-    }
-
-    /**
      * Get the base path for the app being tested
      */
     protected function appBase(): string
     {
         return $this->path($this->directoryWithTests());
+    }
+
+    /**
+     * Get a configuration object for the testing app
+     */
+    protected function appConfig(string $basePath = null): Config
+    {
+        return $this->configManager($basePath)
+            ->loadConfig(
+                [
+                    $this->coreConfigLocation(),
+                ],
+                [
+                    'base' => $this->appBase(),
+                    'root' => dirname($this->appBase()),
+                    'src' => $this->appSrc(),
+                    'cwd' => $this->appWorkingDirectory(),
+                ]
+            );
     }
 
     /**
@@ -168,21 +154,35 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
-     * Get a configuration object for the testing app
+     * Where to load core configuration from
+     *
+     * @return string
      */
-    protected function appConfig(string $basePath = null): Config
+    protected function coreConfigLocation(): string
     {
-        return $this->configManager($basePath)
-            ->loadConfig(
-                [
-                    $this->coreConfigLocation(),
-                ],
-                [
-                    'base' => $this->appBase(),
-                    'root' => dirname($this->appBase()),
-                    'src' => $this->appSrc(),
-                    'cwd' => $this->appWorkingDirectory(),
-                ]
-            );
+        return $this->appSrc() . '/Config';
+    }
+
+    protected function path(string|Utility $path): string
+    {
+        return Utility::make($path)->replace(['\\', '/'], DIRECTORY_SEPARATOR)->value();
+    }
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->setUpTraits();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        Mockery::close();
+    }
+
+    protected function setUpTraits(): void
+    {
+        $traits = $this->getClassTraits(static::class);
     }
 }
