@@ -7,7 +7,7 @@ use ReflectionClass;
 trait UnitTestingUtilities
 {
 
-    public function setObjectProperties(object $object, $properties)
+    public function setObjectProperties(object $object, $properties): void
     {
         $reflection = new ReflectionClass($object);
         foreach ($properties as $name => $value) {

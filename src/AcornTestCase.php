@@ -27,9 +27,7 @@ abstract class AcornTestCase extends TestCase
     /**
      * Catch a given exception from closure execution
      *
-     * @param  string  $exceptionClass
      *
-     * @return mixed
      */
     public function catch(string $exceptionClass): mixed
     {
@@ -47,6 +45,8 @@ abstract class AcornTestCase extends TestCase
                         throw $exception;
                     }
                 }
+
+                return null;
             }
         };
     }
@@ -80,8 +80,6 @@ abstract class AcornTestCase extends TestCase
     /**
      * Where is the test suite running from.
      * This should be set in the executing test case, so Acorn can attempt to locate files
-     *
-     * @return string
      */
     abstract public function runningFrom(): string;
 
@@ -155,8 +153,6 @@ abstract class AcornTestCase extends TestCase
 
     /**
      * Where to load core configuration from
-     *
-     * @return string
      */
     protected function coreConfigLocation(): string
     {
@@ -183,6 +179,6 @@ abstract class AcornTestCase extends TestCase
 
     protected function setUpTraits(): void
     {
-        $traits = $this->getClassTraits(static::class);
+        $this->getClassTraits(static::class);
     }
 }

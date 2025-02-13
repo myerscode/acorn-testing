@@ -39,12 +39,12 @@ class Output extends AcornConsoleOutput
         return trim(str_replace(PHP_EOL, "\n", $display));
     }
 
-    public function reset(mixed $stream = null)
+    public function reset(mixed $stream = null): void
     {
         $this->setStream($stream);
     }
 
-    public function setStream(mixed $stream = null)
+    public function setStream(mixed $stream = null): void
     {
         if (is_null($stream)) {
             $this->stream = fopen('php://memory', 'w');
