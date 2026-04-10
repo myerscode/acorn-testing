@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing\Interactions;
 
 use Myerscode\Acorn\Application;
