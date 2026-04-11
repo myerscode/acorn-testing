@@ -19,7 +19,7 @@ trait InteractsWithCommands
         if (is_string($command)) {
             $command = $this->application()->find($command);
         } else {
-            $this->application()->add($command);
+            $this->application()->addCommand($command);
         }
 
         $command->run($input, $output);
