@@ -50,7 +50,7 @@ abstract class AcornTestCase extends TestCase
      */
     public function catch(string $exceptionClass): mixed
     {
-        return new class ($exceptionClass) {
+        return new readonly class ($exceptionClass) {
             public function __construct(private string $exceptionClass)
             {
             }

@@ -15,7 +15,7 @@ trait InteractsWithContainer
      */
     public function container(): Container
     {
-        if (!(property_exists($this, 'container') && $this->container !== null)) {
+        if (!property_exists($this, 'container') || $this->container === null) {
             $this->refreshContainer();
         }
 

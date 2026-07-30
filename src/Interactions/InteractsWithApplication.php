@@ -16,7 +16,7 @@ trait InteractsWithApplication
      */
     public function application(): Application
     {
-        if (!(property_exists($this, 'app') && $this->app !== null)) {
+        if (!property_exists($this, 'app') || $this->app === null) {
             $this->refreshApplication();
         }
 
