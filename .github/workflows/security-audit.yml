@@ -16,11 +16,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.5'
+          extensions: dom, mbstring, xml, tokenizer
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-interaction
       - name: Run security audit
