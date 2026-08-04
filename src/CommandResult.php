@@ -46,6 +46,26 @@ class CommandResult
     }
 
     /**
+     * Assert the output is empty.
+     */
+    public function assertOutputEmpty(): self
+    {
+        Assertions::assertSame('', trim($this->output), 'Expected output to be empty but got: ' . $this->output);
+
+        return $this;
+    }
+
+    /**
+     * Assert the output equals the given string exactly (after trimming).
+     */
+    public function assertOutputEquals(string $expected): self
+    {
+        Assertions::assertSame($expected, trim($this->output));
+
+        return $this;
+    }
+
+    /**
      * Assert the output matches a regular expression.
      */
     public function assertOutputMatches(string $pattern): self
