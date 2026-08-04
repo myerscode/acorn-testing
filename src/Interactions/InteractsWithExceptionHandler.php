@@ -14,6 +14,27 @@ use Throwable;
 trait InteractsWithExceptionHandler
 {
     /**
+     * Assert that an exception would not be reported (is suppressed).
+     */
+    public function assertWillNotReport(ExceptionHandlerInterface $handler, Throwable $exception): void
+    {
+        $this->assertFalse(
+            $handler->shouldReport($exception),
+            sprintf('Expected %s to be suppressed, but it would be reported.', $exception::class),
+        );
+    }
+
+    /**
+     * Assert that an exception would be reported (not suppressed).
+     */
+    public function assertWillReport(ExceptionHandlerInterface $handler, Throwable $exception): void
+    {
+        $this->assertTrue(
+            $handler->shouldReport($exception),
+            sprintf('Expected %s to be reported, but it is suppressed.', $exception::class),
+        );
+    }
+    /**
      * Create a fresh exception handler for testing.
      */
     public function createExceptionHandler(): ExceptionHandler
@@ -30,27 +51,5 @@ trait InteractsWithExceptionHandler
         $handler->render($output, $exception);
 
         return $output->fetch();
-    }
-
-    /**
-     * Assert that an exception would be reported (not suppressed).
-     */
-    public function assertWillReport(ExceptionHandlerInterface $handler, Throwable $exception): void
-    {
-        $this->assertTrue(
-            $handler->shouldReport($exception),
-            sprintf('Expected %s to be reported, but it is suppressed.', $exception::class),
-        );
-    }
-
-    /**
-     * Assert that an exception would not be reported (is suppressed).
-     */
-    public function assertWillNotReport(ExceptionHandlerInterface $handler, Throwable $exception): void
-    {
-        $this->assertFalse(
-            $handler->shouldReport($exception),
-            sprintf('Expected %s to be suppressed, but it would be reported.', $exception::class),
-        );
     }
 }
