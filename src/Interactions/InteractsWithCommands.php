@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing\Interactions;
 
 use Myerscode\Acorn\Framework\Console\Command;
@@ -17,7 +19,7 @@ trait InteractsWithCommands
         if (is_string($command)) {
             $command = $this->application()->find($command);
         } else {
-            $this->application()->add($command);
+            $this->application()->addCommand($command);
         }
 
         $command->run($input, $output);

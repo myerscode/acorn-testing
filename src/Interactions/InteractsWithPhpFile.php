@@ -1,9 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing\Interactions;
 
 trait InteractsWithPhpFile
 {
+    /**
+     * @return array<string, string>
+     */
     public function getClassTraits(string|object $class): array
     {
         if (is_object($class)) {
@@ -12,19 +17,26 @@ trait InteractsWithPhpFile
 
         $results = [];
 
-        foreach (array_reverse(class_parents($class)) + [$class => $class] as $class) {
-            $results += $this->getTraits($class);
+        foreach (array_reverse((array) class_parents($class)) + [$class => $class] as $className) {
+            $results += $this->getTraits((string) $className);
         }
 
         return array_unique($results);
     }
 
-    protected function getTraits($trait): array
+    /**
+     * @return array<string, string>
+     */
+    protected function getTraits(string $traitName): array
     {
-        $traits = class_uses($trait);
+        $traits = class_uses($traitName);
 
-        foreach ($traits as $trait) {
-            $traits += $this->getTraits($trait);
+        if ($traits === false) {
+            return [];
+        }
+
+        foreach (array_keys($traits) as $usedTrait) {
+            $traits += $this->getTraits($usedTrait);
         }
 
         return $traits;

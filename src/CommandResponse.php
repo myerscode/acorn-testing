@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing;
 
 use Myerscode\Acorn\Foundation\Console\Input\ConfigInput;
@@ -8,7 +10,7 @@ use Myerscode\Acorn\Testing\Testable\Output;
 
 class CommandResponse
 {
-    public function __construct(readonly ConfigInput $input, readonly Output $output)
+    public function __construct(public readonly ConfigInput $input, public readonly Output $output)
     {
         //
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing;
 
 use Closure;
@@ -18,25 +20,42 @@ use ReflectionClass;
 
 abstract class AcornTestCase extends TestCase
 {
-    use InteractsWithPhpFile;
     use InputOutputUtilities;
+    use InteractsWithPhpFile;
     use UnitTestingUtilities;
 
     protected string $appDirectory = 'app';
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->setUpTraits();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        Mockery::close();
+    }
+
+    /**
+     * Where is the test suite running from.
+     * This should be set in the executing test case, so Acorn can attempt to locate files
+     */
+    abstract public function runningFrom(): string;
+
     /**
      * Catch a given exception from closure execution
-     *
-     *
      */
     public function catch(string $exceptionClass): mixed
     {
-        return new class ($exceptionClass) {
-            public function __construct(private $exceptionClass)
+        return new readonly class ($exceptionClass) {
+            public function __construct(private string $exceptionClass)
             {
             }
 
-            public function from(Closure $closure)
+            public function from(Closure $closure): mixed
             {
                 try {
                     return $closure();
@@ -61,6 +80,8 @@ abstract class AcornTestCase extends TestCase
 
     /**
      * Shortcut for creating a mock class
+     *
+     * @param array<mixed> $constructorArgs
      */
     public function mock(string $class, array $constructorArgs = []): LegacyMockInterface
     {
@@ -78,15 +99,11 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
-     * Where is the test suite running from.
-     * This should be set in the executing test case, so Acorn can attempt to locate files
-     */
-    abstract public function runningFrom(): string;
-
-    /**
      * Shortcut for creating a spy class
+     *
+     * @param array<mixed> $constructorArgs
      */
-    public function spy($class, $constructorArgs = []): LegacyMockInterface
+    public function spy(string $class, array $constructorArgs = []): LegacyMockInterface
     {
         return Mockery::spy($class, $constructorArgs);
     }
@@ -94,7 +111,7 @@ abstract class AcornTestCase extends TestCase
     /**
      * Shortcut for creating a stub class
      */
-    public function stub($class): LegacyMockInterface
+    public function stub(string $class): LegacyMockInterface
     {
         return Mockery::mock($class);
     }
@@ -110,7 +127,7 @@ abstract class AcornTestCase extends TestCase
     /**
      * Get a configuration object for the testing app
      */
-    protected function appConfig(string $basePath = null): Config
+    protected function appConfig(?string $basePath = null): Config
     {
         return $this->configManager($basePath)
             ->loadConfig(
@@ -122,7 +139,7 @@ abstract class AcornTestCase extends TestCase
                     'root' => dirname($this->appBase()),
                     'src' => $this->appSrc(),
                     'cwd' => $this->appWorkingDirectory(),
-                ]
+                ],
             );
     }
 
@@ -132,8 +149,9 @@ abstract class AcornTestCase extends TestCase
     protected function appSrc(): string
     {
         $reflectionClass = new ReflectionClass(Application::class);
+        $fileName = $reflectionClass->getFileName();
 
-        return $this->path(dirname($reflectionClass->getFileName()));
+        return $this->path(dirname((string) $fileName));
     }
 
     /**
@@ -144,9 +162,9 @@ abstract class AcornTestCase extends TestCase
         return $this->path($this->runningFrom());
     }
 
-    protected function configManager(string $basePath = null): ConfigManager
+    protected function configManager(?string $basePath = null): ConfigManager
     {
-        return (new ConfigManager($basePath ?? $this->appBase()))
+        return new ConfigManager($basePath ?? $this->appBase())
             ->shouldIgnoreCache()
             ->doNotCacheConfig();
     }
@@ -161,20 +179,7 @@ abstract class AcornTestCase extends TestCase
 
     protected function path(string|Utility $path): string
     {
-        return Utility::make($path)->replace(['\\', '/'], DIRECTORY_SEPARATOR)->value();
-    }
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->setUpTraits();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-        Mockery::close();
+        return (string) Utility::make($path)->replace(['\\', '/'], DIRECTORY_SEPARATOR)->value();
     }
 
     protected function setUpTraits(): void

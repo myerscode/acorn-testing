@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing\Interactions;
 
 use Myerscode\Acorn\Framework\Container\Container;
@@ -13,7 +15,7 @@ trait InteractsWithContainer
      */
     public function container(): Container
     {
-        if (!(property_exists($this, 'container') && $this->container !== null)) {
+        if (!property_exists($this, 'container') || $this->container === null) {
             $this->refreshContainer();
         }
 

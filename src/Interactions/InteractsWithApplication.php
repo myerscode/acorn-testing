@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Myerscode\Acorn\Testing\Interactions;
 
 use Myerscode\Acorn\Application;
@@ -14,7 +16,7 @@ trait InteractsWithApplication
      */
     public function application(): Application
     {
-        if (!(property_exists($this, 'app') && $this->app !== null)) {
+        if (!property_exists($this, 'app') || $this->app === null) {
             $this->refreshApplication();
         }
 
