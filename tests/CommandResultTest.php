@@ -28,6 +28,16 @@ final class CommandResultTest extends TestCase
         $result->assertSuccessful();
     }
 
+    public function testIsStringableToItsOutputForBackwardCompatibility(): void
+    {
+        // call() used to return a string; CommandResult must coerce to the
+        // output so existing assertStringContainsString(...) calls keep working.
+        $result = new CommandResult('Rupert and Gerald', 0);
+
+        $this->assertSame('Rupert and Gerald', (string) $result);
+        $this->assertStringContainsString('Gerald', (string) $result);
+    }
+
     public function testOutputContainsAndMissing(): void
     {
         $result = new CommandResult('Rupert and Gerald', 0);

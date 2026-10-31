@@ -10,7 +10,15 @@ use Mockery;
 use Mockery\LegacyMockInterface;
 use Myerscode\Acorn\Application;
 use Myerscode\Acorn\Framework\Config\Manager as ConfigManager;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithCommands;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithConfig;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithContainer;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithDispatcher;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithEnvironment;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithExceptionHandler;
 use Myerscode\Acorn\Testing\Interactions\InteractsWithPhpFile;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithProgress;
+use Myerscode\Acorn\Testing\Interactions\InteractsWithPrompts;
 use Myerscode\Acorn\Testing\Support\InputOutputUtilities;
 use Myerscode\Acorn\Testing\Support\UnitTestingUtilities;
 use Myerscode\Config\Config;
@@ -20,8 +28,20 @@ use ReflectionClass;
 
 abstract class AcornTestCase extends TestCase
 {
+    // Command interaction helpers are composed here so every acorn test case
+    // can call(), assert on events/config/env and inspect commands without
+    // wiring each trait by hand. InteractsWithCommands pulls in
+    // InteractsWithApplication transitively.
     use InputOutputUtilities;
+    use InteractsWithCommands;
+    use InteractsWithConfig;
+    use InteractsWithContainer;
+    use InteractsWithDispatcher;
+    use InteractsWithEnvironment;
+    use InteractsWithExceptionHandler;
     use InteractsWithPhpFile;
+    use InteractsWithProgress;
+    use InteractsWithPrompts;
     use UnitTestingUtilities;
 
     protected string $appDirectory = 'app';
@@ -35,6 +55,11 @@ abstract class AcornTestCase extends TestCase
 
     protected function tearDown(): void
     {
+        // Undo any config overrides and environment variables set during the
+        // test so state never leaks into the next one.
+        $this->restoreConfig();
+        $this->restoreEnvironment();
+
         parent::tearDown();
         Mockery::close();
     }

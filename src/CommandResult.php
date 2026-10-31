@@ -5,14 +5,24 @@ declare(strict_types=1);
 namespace Myerscode\Acorn\Testing;
 
 use Myerscode\Acorn\Testing\Support\Assertions;
+use Stringable;
 
-class CommandResult
+class CommandResult implements Stringable
 {
     public function __construct(
         public readonly string $output,
         public readonly int $exitCode,
     ) {
         //
+    }
+
+    /**
+     * The captured output, so a CommandResult can be used anywhere the old
+     * string return of call() was expected (e.g. assertStringContainsString).
+     */
+    public function __toString(): string
+    {
+        return $this->output;
     }
 
     /**

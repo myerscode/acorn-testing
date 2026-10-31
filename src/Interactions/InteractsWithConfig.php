@@ -27,6 +27,13 @@ trait InteractsWithConfig
      */
     public function restoreConfig(): void
     {
+        // Nothing overridden: do not touch (or even resolve) the config
+        // container. AcornTestCase calls this in tearDown() for every test,
+        // including those that never built an application.
+        if ($this->originalConfigValues === []) {
+            return;
+        }
+
         $config = $this->getConfigInstance();
 
         foreach ($this->originalConfigValues as $key => $value) {
