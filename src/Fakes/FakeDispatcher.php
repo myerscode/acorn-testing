@@ -19,6 +19,12 @@ class FakeDispatcher extends Dispatcher
     /** @var list<array{event: string, payload: mixed}> */
     private array $dispatched = [];
 
+    /**
+     * The event name supplied to emit(), carried into the dispatch() call it
+     * triggers so the recorded name is the one the caller used.
+     */
+    private ?string $emittedName = null;
+
     public function __construct(?QueueInterface $queue = null)
     {
         parent::__construct($queue ?? new SynchronousQueue());
@@ -26,8 +32,14 @@ class FakeDispatcher extends Dispatcher
 
     public function dispatch(object $event, ?string $eventName = null): object
     {
-        $name = $eventName ?? $event::class;
+        // dispatch() is the single chokepoint: emit() builds an event and
+        // delegates here, so recording only in dispatch() counts each event
+        // exactly once. emit() forwards the caller's event name via the
+        // marker property below so a named event keeps its name rather than
+        // being recorded as NamedEvent::class.
+        $name = $eventName ?? $this->emittedName ?? $event::class;
         $this->dispatched[] = ['event' => $name, 'payload' => $event];
+        $this->emittedName = null;
 
         return parent::dispatch($event, $eventName);
     }
@@ -65,7 +77,9 @@ class FakeDispatcher extends Dispatcher
 
     public function emit(string $eventName, mixed $params = null): self
     {
-        $this->dispatched[] = ['event' => $eventName, 'payload' => $params];
+        // Record happens once, inside the dispatch() that parent::emit()
+        // calls; pass the caller's name through so it is preserved.
+        $this->emittedName = $eventName;
 
         parent::emit($eventName, $params);
 

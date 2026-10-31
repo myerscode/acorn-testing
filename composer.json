@@ -18,12 +18,12 @@
     "require": {
         "php": "^8.5",
         "mockery/mockery": "^1.4",
+        "myerscode/acorn-framework": "dev-main",
         "phpunit/phpunit": "^13.0",
         "symfony/var-dumper": "^8.0"
     },
     "require-dev": {
         "laravel/pint": "^1.0",
-        "myerscode/acorn-framework": "dev-main",
         "phpstan/phpstan": "^2.0"
     },
     "autoload": {
