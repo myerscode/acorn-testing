@@ -150,15 +150,25 @@ abstract class AcornTestCase extends TestCase
     }
 
     /**
-     * Get a configuration object for the testing app
+     * Get a configuration object for the testing app.
+     *
+     * Mirrors Kernel::configLocations(): the framework's core config plus the
+     * app under test's own Config directory, so app-level config (and the
+     * app.dir.* paths that drive command/listener discovery) resolves exactly
+     * as it does at runtime.
      */
     protected function appConfig(?string $basePath = null): Config
     {
+        $locations = [$this->coreConfigLocation()];
+
+        $appConfig = $this->appConfigLocation();
+        if (is_dir($appConfig)) {
+            $locations[] = $appConfig;
+        }
+
         return $this->configManager($basePath)
             ->loadConfig(
-                [
-                    $this->coreConfigLocation(),
-                ],
+                $locations,
                 [
                     'base' => $this->appBase(),
                     'root' => dirname($this->appBase()),
@@ -166,6 +176,14 @@ abstract class AcornTestCase extends TestCase
                     'cwd' => $this->appWorkingDirectory(),
                 ],
             );
+    }
+
+    /**
+     * Where the app under test keeps its own config (app/Config).
+     */
+    protected function appConfigLocation(): string
+    {
+        return $this->appBase() . 'Config';
     }
 
     /**

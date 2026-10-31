@@ -32,8 +32,14 @@ final class CorgiCommand extends Command
 
         $this->output->writeln($greeting);
 
-        // Exit non-zero for the reserved troublemaker, to exercise exit-code
-        // assertions.
-        return $name === 'Arthur' ? 2 : 0;
+        // Arthur is the troublemaker: warn on stderr and exit non-zero, to
+        // exercise error-output and exit-code assertions.
+        if ($name === 'Arthur') {
+            $this->output->getErrorStyle()->writeln('Arthur is being naughty');
+
+            return 2;
+        }
+
+        return 0;
     }
 }

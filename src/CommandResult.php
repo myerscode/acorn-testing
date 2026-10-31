@@ -12,6 +12,7 @@ class CommandResult implements Stringable
     public function __construct(
         public readonly string $output,
         public readonly int $exitCode,
+        public readonly string $errorOutput = '',
     ) {
         //
     }
@@ -23,6 +24,39 @@ class CommandResult implements Stringable
     public function __toString(): string
     {
         return $this->output;
+    }
+
+    /**
+     * Assert the error output (stderr) contains the given string.
+     *
+     * Only meaningful when the command was run with separated streams
+     * (e.g. runCommandCapturingStreams()); with merged output stderr is empty.
+     */
+    public function assertErrorOutputContains(string $expected): self
+    {
+        Assertions::assertStringContainsString($expected, $this->errorOutput);
+
+        return $this;
+    }
+
+    /**
+     * Assert the error output (stderr) is empty.
+     */
+    public function assertErrorOutputEmpty(): self
+    {
+        Assertions::assertSame('', trim($this->errorOutput), 'Expected error output to be empty but got: ' . $this->errorOutput);
+
+        return $this;
+    }
+
+    /**
+     * Assert the error output (stderr) does not contain the given string.
+     */
+    public function assertErrorOutputMissing(string $unexpected): self
+    {
+        Assertions::assertStringNotContainsString($unexpected, $this->errorOutput);
+
+        return $this;
     }
 
     /**

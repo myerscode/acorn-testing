@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Myerscode\Acorn\Testing\Interactions;
 
+use Myerscode\Acorn\Foundation\Console\Display\DisplayOutput;
 use Myerscode\Acorn\Framework\Console\Command;
 use Myerscode\Acorn\Testing\CommandResult;
+use Myerscode\Acorn\Testing\Testable\CapturingConsoleOutput;
 use Myerscode\Acorn\Testing\Testable\TestableCommand;
 use RuntimeException;
 
@@ -91,6 +93,41 @@ trait InteractsWithCommands
         return new CommandResult(
             output: trim(str_replace(PHP_EOL, "\n", $display)),
             exitCode: $exitCode,
+        );
+    }
+
+    /**
+     * Run a command with stdout and stderr captured separately, so error
+     * output can be asserted independently:
+     *
+     *   $this->runCommandCapturingStreams('deploy')
+     *       ->assertOutputContains('Done')
+     *       ->assertErrorOutputContains('warning');
+     *
+     * Output written via the command's error style (getErrorStyle()/stderr)
+     * lands in errorOutput; everything else in output.
+     *
+     * @param array<mixed> $userInput
+     */
+    public function runCommandCapturingStreams(string|Command $command, array $userInput = []): CommandResult
+    {
+        $input = $this->createInput($userInput);
+
+        $console = new CapturingConsoleOutput();
+        $output = new DisplayOutput($input, $console);
+
+        if (is_string($command)) {
+            $command = $this->application()->find($command);
+        } else {
+            $this->application()->addCommand($command);
+        }
+
+        $exitCode = $command->run($input, $output);
+
+        return new CommandResult(
+            output: $console->fetchOutput(),
+            exitCode: $exitCode,
+            errorOutput: $console->fetchErrorOutput(),
         );
     }
 }
