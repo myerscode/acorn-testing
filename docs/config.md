@@ -1,22 +1,20 @@
 # Testing with Config Overrides
 
-Use `InteractsWithConfig` to override config values during tests without affecting other tests.
+`InteractsWithConfig` overrides config values during tests without affecting
+other tests. It is composed into `AcornTestCase`, so you do not need to `use`
+it, and overrides are restored automatically in `tearDown()`.
+
+> **App config is loaded automatically.** `AcornTestCase` loads the framework's
+> core config *and* your app's own `app/Config` directory, exactly as the
+> runtime `Kernel` does. Config your app defines (and the `app.dir.*` paths that
+> drive command and listener discovery) is available in tests without manual
+> wiring — override only the specific values a test needs.
 
 ## Basic Usage
 
 ```php
-use Myerscode\Acorn\Testing\Interactions\InteractsWithConfig;
-
 class CacheTest extends AcornTestCase
 {
-    use InteractsWithConfig;
-
-    protected function tearDown(): void
-    {
-        $this->restoreConfig();
-        parent::tearDown();
-    }
-
     public function testUsesFileDriver(): void
     {
         $this->setConfig('app.cache.driver', FileCacheDriver::class);
@@ -55,7 +53,14 @@ public function testConfigIsSet(): void
 
 ## Automatic Restoration
 
-Call `restoreConfig()` in `tearDown()` to reset all overridden values. This ensures test isolation — config changes in one test don't leak into the next.
+`AcornTestCase::tearDown()` calls `restoreConfig()` for you, so overridden
+values are reset between tests and nothing leaks. Only values you set via
+`setConfig()` or `setConfigValues()` are tracked and restored; values you did
+not touch are left alone.
+
+If you compose `InteractsWithConfig` into a plain `PHPUnit\Framework\TestCase`
+instead of extending `AcornTestCase`, call `restoreConfig()` in your own
+`tearDown()`:
 
 ```php
 protected function tearDown(): void
@@ -64,5 +69,3 @@ protected function tearDown(): void
     parent::tearDown();
 }
 ```
-
-Only values you've set via `setConfig()` or `setConfigValues()` are tracked and restored. Values you didn't touch remain unchanged.

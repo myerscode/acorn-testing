@@ -1,18 +1,16 @@
 # Testing Events
 
-Use `InteractsWithDispatcher` to assert that events are dispatched correctly.
+`InteractsWithDispatcher` asserts that events are dispatched correctly. It is
+composed into `AcornTestCase`, so you do not need to `use` it.
 
 ## Setting Up the Fake
 
-Call `fakeDispatcher()` before the code under test runs. This swaps in a recording dispatcher:
+Call `fakeDispatcher()` before the code under test runs. This swaps in a
+recording dispatcher:
 
 ```php
-use Myerscode\Acorn\Testing\Interactions\InteractsWithDispatcher;
-
 class OrderServiceTest extends AcornTestCase
 {
-    use InteractsWithDispatcher;
-
     public function testOrderEmitsEvent(): void
     {
         $dispatcher = $this->fakeDispatcher();
@@ -23,6 +21,9 @@ class OrderServiceTest extends AcornTestCase
     }
 }
 ```
+
+> Each `emit()` or `dispatch()` is recorded exactly once, so the `times:`
+> counts below are accurate.
 
 ## Assert Dispatched
 
