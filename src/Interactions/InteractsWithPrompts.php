@@ -18,7 +18,7 @@ trait InteractsWithPrompts
      * The answers array should be ordered to match the sequence of prompts
      * the command will ask.
      *
-     * @param string[] $answers Answers to feed to interactive prompts (in order)
+     * @param list<string> $answers Answers to feed to interactive prompts (in order)
      * @param array<string, mixed> $arguments Command arguments/options
      */
     public function callWithPrompts(string|Command $command, array $answers, array $arguments = []): CommandResult

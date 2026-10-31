@@ -68,11 +68,7 @@ trait InteractsWithDispatcher
      */
     public function dispatcher(QueueInterface $queue = new SynchronousQueue()): Dispatcher
     {
-        if (!isset($this->dispatcher)) {
-            $this->refreshDispatcher($queue);
-        }
-
-        return $this->dispatcher;
+        return $this->dispatcher ??= $this->newDispatcher($queue);
     }
 
     /**

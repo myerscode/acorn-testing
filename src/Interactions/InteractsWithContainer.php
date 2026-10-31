@@ -15,11 +15,7 @@ trait InteractsWithContainer
      */
     public function container(): Container
     {
-        if (!property_exists($this, 'container') || $this->container === null) {
-            $this->refreshContainer();
-        }
-
-        return $this->container;
+        return $this->container ??= $this->newContainer();
     }
 
     public function newContainer(): Container
@@ -37,12 +33,10 @@ trait InteractsWithContainer
 
     public function refreshContainer(): Container
     {
-        if (property_exists($this, 'container') && $this->container !== null) {
+        if ($this->container !== null) {
             $this->container->flush();
         }
 
-        $this->container = $this->newContainer();
-
-        return $this->container;
+        return $this->container = $this->newContainer();
     }
 }

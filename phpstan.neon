@@ -2,5 +2,3 @@ parameters:
     level: 8
     paths:
         - src
-    ignoreErrors:
-        - '#Trait .+ is used zero times and is not analysed\.#'

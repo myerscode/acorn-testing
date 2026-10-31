@@ -16,11 +16,7 @@ trait InteractsWithApplication
      */
     public function application(): Application
     {
-        if (!property_exists($this, 'app') || $this->app === null) {
-            $this->refreshApplication();
-        }
-
-        return $this->app;
+        return $this->app ??= $this->createApplication();
     }
 
     public function createApplication(Container $container = new Container()): Application
@@ -38,8 +34,6 @@ trait InteractsWithApplication
         $this->application()->reset();
 
         $this->app = null;
-
-        unset($this->app);
     }
 
     public function refreshApplication(Container $container = new Container()): Application
